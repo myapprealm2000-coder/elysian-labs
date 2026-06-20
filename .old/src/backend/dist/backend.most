@@ -1,0 +1,86 @@
+// Version: 1.0.0
+type ContactMessageId__248688983 = Text;
+type ContactMessage__261640387 =
+  {
+    createdAt : Timestamp__301639476;
+    email : Text;
+    id : ContactMessageId__248688983;
+    isRead : Bool;
+    message : Text;
+    name : Text
+  };
+type CourseId__927523888 = Text;
+type Course__321233390 =
+  {
+    description : Text;
+    id : CourseId__927523888;
+    instructorName : Text;
+    lessons : [Lesson__403778655];
+    thumbnailUrl : Text;
+    title : Text
+  };
+type Data__80296667<K, V> =
+  {var count : Nat__1040412405; kvs : [var ?(K, V)]};
+type ExternalBlob__671167343 = Blob;
+type Internal__41346355<K, V> =
+  {children : [var ?Node__1000929467<K, V>]; data : Data__80296667<K, V>};
+type Leaf__712614010<K, V> = {data : Data__80296667<K, V>};
+type LessonId__21783266 = Text;
+type LessonProgress__240555495 =
+  {
+    completedAt : ?Timestamp__301639476;
+    lessonId : LessonId__21783266;
+    userId : Text
+  };
+type Lesson__403778655 =
+  {
+    courseId : CourseId__927523888;
+    description : Text;
+    durationMinutes : Nat;
+    id : LessonId__21783266;
+    order : Nat;
+    title : Text;
+    videoUrl : Text
+  };
+type Nat__1040412405 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__1000929467<K, V> =
+  {#internal : Internal__41346355<K, V>; #leaf : Leaf__712614010<K, V>};
+type ProjectId__478417951 = Text;
+type Project__614212307 =
+  {
+    createdAt : Timestamp__301639476;
+    id : ProjectId__478417951;
+    name : Text;
+    templateType : TemplateType__83134933;
+    updatedAt : Timestamp__301639476;
+    videoFile : ?ExternalBlob__671167343
+  };
+type TemplateType__83134933 = {#ad; #blank; #thumbnail};
+type Timestamp__301639476 = Int;
+actor {
+  stable contacts :
+    {
+      var root :
+        Node__1000929467<ContactMessageId__248688983,
+                          ContactMessage__261640387>;
+      var size : Nat__1040412405
+    };
+  stable courses :
+    {
+      var root : Node__1000929467<CourseId__927523888, Course__321233390>;
+      var size : Nat__1040412405
+    };
+  stable progress :
+    {
+      var blockIndex : Nat__1040412405;
+      var blocks : [var [var ?LessonProgress__240555495]];
+      var elementIndex : Nat__1040412405
+    };
+  stable projects :
+    {
+      var root : Node__1000929467<ProjectId__478417951, Project__614212307>;
+      var size : Nat__1040412405
+    };
+  stable var seeded : Bool
+};

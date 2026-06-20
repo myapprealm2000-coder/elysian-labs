@@ -1,0 +1,95 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type Timestamp = int;
+type TemplateType = 
+ variant {
+   ad;
+   blank;
+   thumbnail;
+ };
+type ProjectId = text;
+type Project = 
+ record {
+   createdAt: Timestamp;
+   id: ProjectId;
+   name: text;
+   templateType: TemplateType;
+   updatedAt: Timestamp;
+   videoFile: opt ExternalBlob;
+ };
+type LessonProgress = 
+ record {
+   completedAt: opt Timestamp;
+   lessonId: LessonId;
+   userId: text;
+ };
+type LessonId = text;
+type Lesson = 
+ record {
+   courseId: CourseId;
+   description: text;
+   durationMinutes: nat;
+   id: LessonId;
+   order: nat;
+   title: text;
+   videoUrl: text;
+ };
+type ExternalBlob = blob;
+type CourseId = text;
+type Course = 
+ record {
+   description: text;
+   id: CourseId;
+   instructorName: text;
+   lessons: vec Lesson;
+   thumbnailUrl: text;
+   title: text;
+ };
+type ContactMessageId = text;
+type ContactMessage = 
+ record {
+   createdAt: Timestamp;
+   email: text;
+   id: ContactMessageId;
+   isRead: bool;
+   message: text;
+   name: text;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  addLesson: (courseId: CourseId, lessonId: LessonId, title: text,
+   description: text, videoUrl: text, durationMinutes: nat, order: nat) ->
+   (bool);
+  attachVideoFile: (id: ProjectId, videoFile: ExternalBlob) -> (bool);
+  createCourse: (title: text, description: text, thumbnailUrl: text) ->
+   (Course);
+  createProject: (name: text, templateType: TemplateType) -> (Project);
+  deleteProject: (id: ProjectId) -> (bool);
+  getCourse: (id: CourseId) -> (opt Course) query;
+  getLessonProgress: (userId: text) -> (vec LessonProgress) query;
+  getProject: (id: ProjectId) -> (opt Project) query;
+  listContactMessages: () -> (vec ContactMessage) query;
+  listCourses: () -> (vec Course) query;
+  listProjects: () -> (vec Project) query;
+  markLessonComplete: (lessonId: LessonId, userId: text) -> (bool);
+  submitContact: (name: text, email: text, message: text) -> (bool);
+}
